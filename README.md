@@ -7,19 +7,6 @@
 <img width="437" height="203" alt="image" src="https://github.com/user-attachments/assets/49ea313c-d355-45e4-8305-a079665f9984" />
 <img width="655" height="521" alt="image" src="https://github.com/user-attachments/assets/111cd961-a561-47ff-ac15-799f4c2943bc" />
 
-<table>
-<tr>
-<td width="33%"><img src="screenshots/01-applicant-profile.png" alt="Applicant profile form"></td>
-<td width="33%"><img src="screenshots/02-prediction.png" alt="Prediction result"></td>
-<td width="34%"><img src="screenshots/03-bias-check.png" alt="Bias check results across race and sex"></td>
-</tr>
-<tr>
-<td align="center"><sub>01 — Applicant profile</sub></td>
-<td align="center"><sub>02 — Prediction</sub></td>
-<td align="center"><sub>03 — Bias check across race × sex</sub></td>
-</tr>
-</table>
-
 ---
 
 ## What this is
