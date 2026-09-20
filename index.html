@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Income Bias Analyzer</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚖️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">
+      <span class="hero-mark">⚖</span>
+      <div class="hero-endpoint">
+        <label for="apiBase">API endpoint</label>
+        <input type="text" id="apiBase" value="http://localhost:5000" spellcheck="false" />
+        <span class="status" id="connStatus" data-state="unknown">checking…</span>
+      </div>
+    </div>
+    <h1>Income Bias Analyzer</h1>
+    <p class="hero-sub">A random forest predicts income from a Census-style profile. This instrument holds one applicant fixed and swaps only race and sex, to see whether the model's call moves on those attributes alone.</p>
+  </div>
+</header>
+
+<div class="app">
+  <main class="layout">
+
+    <!-- LEFT: INPUT FORM -->
+    <section class="panel form-panel" aria-label="Applicant profile">
+      <div class="panel-head">
+        <span class="panel-eyebrow">01</span>
+        <div>
+          <h2 class="panel-title">Applicant profile</h2>
+          <p class="panel-sub">Every field feeds the model.</p>
+        </div>
+      </div>
+
+      <form id="profileForm">
+        <div class="field-grid">
+
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" value="39" min="17" max="90" required>
+          </div>
+
+          <div class="field">
+            <label for="workclass">Workclass</label>
+            <select id="workclass" name="workclass" required></select>
+          </div>
+
+          <div class="field">
+            <label for="fnlwgt">Census weight (fnlwgt)</label>
+            <input type="number" id="fnlwgt" name="fnlwgt" value="77516" min="0" required>
+          </div>
+
+          <div class="field">
+            <label for="education">Education</label>
+            <select id="education" name="education" required></select>
+          </div>
+
+          <div class="field">
+            <label for="education_num">Education, years</label>
+            <input type="number" id="education_num" name="education_num" value="13" min="1" max="20" required>
+          </div>
+
+          <div class="field">
+            <label for="marital_status">Marital status</label>
+            <select id="marital_status" name="marital_status" required></select>
+          </div>
+
+          <div class="field">
+            <label for="occupation">Occupation</label>
+            <select id="occupation" name="occupation" required></select>
+          </div>
+
+          <div class="field">
+            <label for="relationship">Relationship</label>
+            <select id="relationship" name="relationship" required></select>
+          </div>
+
+          <div class="field">
+            <label for="capital_gain">Capital gain</label>
+            <input type="number" id="capital_gain" name="capital_gain" value="2174" min="0" required>
+          </div>
+
+          <div class="field">
+            <label for="capital_loss">Capital loss</label>
+            <input type="number" id="capital_loss" name="capital_loss" value="0" min="0" required>
+          </div>
+
+          <div class="field">
+            <label for="hours_per_week">Hours per week</label>
+            <input type="number" id="hours_per_week" name="hours_per_week" value="40" min="1" max="99" required>
+          </div>
+
+          <div class="field">
+            <label for="native_country">Native country</label>
+            <select id="native_country" name="native_country" required></select>
+          </div>
+
+          <div class="field held">
+            <label for="race">Race <span class="tag">held for bias check</span></label>
+            <select id="race" name="race" required></select>
+          </div>
+
+          <div class="field held">
+            <label for="sex">Sex <span class="tag">held for bias check</span></label>
+            <select id="sex" name="sex" required></select>
+          </div>
+
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary" id="predictBtn">Run prediction</button>
+          <button type="button" class="btn secondary" id="biasBtn">Run bias check</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- RIGHT: RESULTS -->
+    <section class="panel results-panel" aria-label="Results">
+
+      <div class="result-block" id="predictionBlock">
+        <div class="panel-head">
+          <span class="panel-eyebrow">02</span>
+          <div>
+            <h2 class="panel-title">Prediction</h2>
+            <p class="panel-sub">The model's single call for this profile.</p>
+          </div>
+        </div>
+
+        <div id="predictionEmpty" class="empty-state">
+          Fill in the profile and run a prediction to see the model's call here.
+        </div>
+        <div id="predictionResult" class="prediction-result" hidden>
+          <div class="verdict">
+            <span class="verdict-label" id="verdictLabel">—</span>
+            <span class="verdict-caption">predicted income band</span>
+          </div>
+          <div class="confidence-bar">
+            <div class="confidence-track">
+              <div class="confidence-tick" style="left:25%"></div>
+              <div class="confidence-tick" style="left:50%"></div>
+              <div class="confidence-tick" style="left:75%"></div>
+              <div class="confidence-fill" id="confidenceFill"></div>
+            </div>
+            <div class="confidence-readout">
+              <span id="confidenceLow">P(≤50K) —</span>
+              <span id="confidenceHigh">P(&gt;50K) —</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-block" id="biasBlock">
+        <div class="panel-head">
+          <span class="panel-eyebrow">03</span>
+          <div>
+            <h2 class="panel-title">Bias check — race × sex</h2>
+            <p class="panel-sub">Same applicant, every group the model was trained on.</p>
+          </div>
+        </div>
+
+        <div id="biasEmpty" class="empty-state">
+          Run the bias check to see whether the model's prediction shifts on race or sex alone.
+        </div>
+
+        <div id="biasResult" hidden>
+          <div class="spread-readout">
+            <span class="spread-label">Max spread in P(&gt;50K) across groups</span>
+            <span class="spread-value" id="spreadValue">—</span>
+          </div>
+          <div class="bias-grid" id="biasGrid"></div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    Model: RandomForestClassifier, trained on Census/Adult-style income data. Served from your local <code>app.py</code>.
+  </footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
