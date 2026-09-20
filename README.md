@@ -2,13 +2,10 @@
 
 **A fairness audit tool for a Census-income classifier.** Fix an applicant's profile, then watch the model's predicted income band shift as race and sex change — everything else held constant.
 
-![Python](https://img.shields.io/badge/python-3.13-blue?logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/flask-3.0-black?logo=flask&logoColor=white)
-![scikit--learn](https://img.shields.io/badge/scikit--learn-1.6-orange?logo=scikit-learn&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-green)
-
-<!-- Full app screenshot -->
-![Income Bias Analyzer — full app](screenshots/00-full-app.png)
+<img width="1152" height="844" alt="Capture" src="https://github.com/user-attachments/assets/c822b302-33d0-454b-a35e-2dbcee9cc895" />
+<img width="681" height="816" alt="image" src="https://github.com/user-attachments/assets/234d00f1-322b-4a25-9906-7a4e50b57a2f" />
+<img width="437" height="203" alt="image" src="https://github.com/user-attachments/assets/49ea313c-d355-45e4-8305-a079665f9984" />
+<img width="655" height="521" alt="image" src="https://github.com/user-attachments/assets/111cd961-a561-47ff-ac15-799f4c2943bc" />
 
 <table>
 <tr>
